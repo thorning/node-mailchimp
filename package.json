@@ -1,0 +1,33 @@
+{
+  "name": "mailchimp-api-v3",
+  "version": "1.0.0",
+  "description": "Mailchimp wrapper for v3 of the mailchimp api, with transparant handling of batch operations",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://thorning@github.com/thorning/node-mailchimp.git"
+  },
+  "keywords": [
+    "mailchimp",
+    "api",
+    "v3",
+    "batch",
+    "REST",
+    "email",
+    "mail"
+  ],
+  "author": "Andreas Thorning",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thorning/node-mailchimp/issues"
+  },
+  "homepage": "https://github.com/thorning/node-mailchimp#readme",
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "request": "^2.67.0",
+    "tar": "^2.2.1"
+  }
+}
