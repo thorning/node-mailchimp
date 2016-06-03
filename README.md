@@ -102,11 +102,11 @@ mailchimp.batch(calls, callback, {
   wait : true,
   interval : 2000,
   unpack : true,
-}, cb)
+})
 ```
 
 `batch` takes an array of call options, exactly as used in the standard call.
 
 * `wait` whether or not to wait for the batch command to finish, defaults to `true`
 * `interval` if `wait` is true, the interval to poll for the status of the batch call, defaults to 2000ms
-* `unpack` if `wait` is true, whether or not to get and unpack the results of the batch operation, and return the responsebodies.
+* `unpack` if `wait` is true, whether or not to get and unpack the results of the batch operation, and return the response bodies.
