@@ -31,7 +31,7 @@ mailchimp.batch([
 ```
 
 ## Why
-Version 3 of the mailchimp api is a excelent restfull api. This library makes it easy to integrate mailchimp using their own api documentation.
+Version 3 of the mailchimp api is a excellent restfull api. This library makes it easy to integrate mailchimp using their own api documentation.
 
 This library also supports easy usage of the mailchimp batch operations, enabling them to be used just as the standard api calls.
 
