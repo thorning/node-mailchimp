@@ -14,7 +14,7 @@ mailchimp.get({
 })
 ```
 
-seemless batch calls, with polling and unpacking of results
+seamless batch calls, with polling and unpacking of results
 
 ```javascript
 mailchimp.batch([
@@ -31,7 +31,7 @@ mailchimp.batch([
 ```
 
 ## Why
-Version 3 of the mailchimp api is a excellent restfull api. This library makes it easy to integrate mailchimp using their own api documentation.
+Version 3 of the mailchimp api is an excellent RESTful api. This library makes it easy to integrate mailchimp using their own api documentation.
 
 This library also supports easy usage of the mailchimp batch operations, enabling them to be used just as the standard api calls.
 
@@ -41,7 +41,7 @@ This library also supports easy usage of the mailchimp batch operations, enablin
 
 ## Usage
 
-For information on the possible calls, reffer to the mailchimp api v3 documentation: [http://developer.mailchimp.com/documentation/mailchimp/reference/overview/](http://developer.mailchimp.com/documentation/mailchimp/reference/overview/)
+For information on the possible calls, refer to the mailchimp api v3 documentation: [http://developer.mailchimp.com/documentation/mailchimp/reference/overview/](http://developer.mailchimp.com/documentation/mailchimp/reference/overview/)
 
 ### Initialization
 
@@ -69,9 +69,9 @@ mailchimp.request({
 }, callback)
 ```
 
-`path` can be given either exactly as in the mailchimp documentaton (`"/campaigns/{campaign_id}"`) and `path_params` specifying id values, or as a string with path parameters already substituded, and no `path_params`
+`path` can be given either exactly as in the mailchimp documentation (`"/campaigns/{campaign_id}"`) and `path_params` specifying id values, or as a string with path parameters already substituted, and no `path_params`
 
-For each request method, convinience calls exists to default to that method:
+For each request method, convenience calls exists to default to that method:
 ```javascript
 mailchimp.get({}, cb)
 mailchimp.post({}, cb)
