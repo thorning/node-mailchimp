@@ -7,6 +7,13 @@ var request = require('request'),
 
 
 function Mailchimp (api_key) {
+  var api_key_regex = /.+\-.+/
+
+  if (!api_key_regex.test(api_key)) {
+    throw new Error('missing or invalid api key: ' + api_key)
+  }
+
+
   this.__api_key = api_key;
   this.__base_url = "https://"+ this.__api_key.split('-')[1] + ".api.mailchimp.com/3.0"
 }
@@ -307,6 +314,14 @@ Mailchimp.prototype.request = function (options, done) {
   var method = options.method || 'get';
   var body = options.body || {};
   var params = options.params;
+  var query = options.query;
+
+  if (params) {
+    console.warn('params is depricated, use query instead');
+    if (!query) {
+      query = params;
+    }
+  }
 
   if (!path || !_.isString(path)) {
     done(new Error('No path given'));
@@ -321,7 +336,7 @@ Mailchimp.prototype.request = function (options, done) {
       password : this.__api_key
     },
     json : body,
-    qs : params
+    qs : query
   }, function (err, response) {
     if (err) {
       done(err);

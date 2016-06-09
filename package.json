@@ -4,7 +4,7 @@
   "description": "Mailchimp wrapper for v3 of the mailchimp api, with transparant handling of batch operations",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -15,9 +15,9 @@
     "api",
     "v3",
     "batch",
-    "REST",
-    "email",
-    "mail"
+    "mailchimp api v3",
+    "wrapper",
+    "mailchimp api"
   ],
   "author": "Andreas Thorning",
   "license": "MIT",
