@@ -43,6 +43,15 @@ describe('basic mailchimp api methods', function () {
     })
   })
 
+  it('should handle wrong path', function (done) {
+    mailchimp.get({
+      path : '/wrong',
+    }, function (err, result) {
+      assert.equal(err.status, 404);
+      done()
+    })
+  })
+
   it('should handle simple get with promise', function (done) {
     mailchimp.get({
       path : '/lists',
@@ -55,8 +64,24 @@ describe('basic mailchimp api methods', function () {
     })
   })
 
+  it('should handle wrong path with promise', function (done) {
+    mailchimp.get({
+      path : '/wrong',
+    }).then(function (result) {
+      throw err;
+    }).catch(function (err) {
+      assert.equal(err.status, 404);
+      done()
+    })
+  })
 
-  it.skip('should handle batch operations', function (done) {
+})
+
+describe('batch mailchimp api methods', function () {
+
+  var mailchimp = new Mailchimp(api_key);
+
+  it('should handle batch operations', function (done) {
     this.timeout(100000)
     mailchimp.batch([
       {
@@ -73,6 +98,25 @@ describe('basic mailchimp api methods', function () {
       done()
     }, {
       verbose : false
+    })
+  })
+
+  it('should handle batch operations with promise', function (done) {
+    this.timeout(100000)
+    mailchimp.batch([
+      {
+        method : 'get',
+        path : '/lists',
+      },
+      {
+        method : 'get',
+        path : '/lists',
+      },
+    ]).then(function (result) {
+      assert.equal(result.length, 2)
+      done()
+    }).catch(function (err) {
+      throw err;
     })
   })
 })

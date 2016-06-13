@@ -3,6 +3,7 @@
 var request = require('request'),
     tar   = require('tar'),
     zlib    = require('zlib'),
+    Promise = require("bluebird"),
     _       = require('lodash');
 
 
@@ -53,7 +54,7 @@ Mailchimp.prototype.get = function (options, done) {
     }
   }
   options.method = 'get';
-  this.request(options, done);
+  return this.request(options, done);
 }
 
 Mailchimp.prototype.post = function (options, done) {
@@ -65,7 +66,7 @@ Mailchimp.prototype.post = function (options, done) {
     }
   }
   options.method = 'post';
-  this.request(options, done);
+  return this.request(options, done);
 }
 
 Mailchimp.prototype.patch = function (options, done) {
@@ -77,7 +78,7 @@ Mailchimp.prototype.patch = function (options, done) {
     }
   }
   options.method = 'patch';
-  this.request(options, done);
+  return this.request(options, done);
 }
 
 Mailchimp.prototype.put = function (options, done) {
@@ -89,7 +90,7 @@ Mailchimp.prototype.put = function (options, done) {
     }
   }
   options.method = 'put';
-  this.request(options, done);
+  return this.request(options, done);
 }
 
 Mailchimp.prototype.delete = function (options, done) {
@@ -101,7 +102,7 @@ Mailchimp.prototype.delete = function (options, done) {
     }
   }
   options.method = 'delete';
-  this.request(options, done);
+  return this.request(options, done);
 }
 
 
@@ -296,62 +297,73 @@ Mailchimp.prototype.batch = function (operations, done, opts) {
 }
 
 Mailchimp.prototype.request = function (options, done) {
-  if (!_.isFunction(done)) {
-    done = function () {}
-  }
-  if (!options) {
-    done(new Error("No request options given"));
-    return;
-  }
+  var mailchimp = this;
 
-  if (_.isString(options)) {
-    options = {
-      path : options,
-    }
-  }
+  var promise = new Promise(function(resolve, reject) {
 
-  var path = formatPath(options.path, options.path_params);
-  var method = options.method || 'get';
-  var body = options.body || {};
-  var params = options.params;
-  var query = options.query;
-
-  if (params) {
-    console.warn('params is depricated, use query instead');
-    if (!query) {
-      query = params;
-    }
-  }
-
-  if (!path || !_.isString(path)) {
-    done(new Error('No path given'));
-    return;
-  }
-
-  request({
-    method : method,
-    url : this.__base_url + path,
-    auth : {
-      user : 'any',
-      password : this.__api_key
-    },
-    json : body,
-    qs : query
-  }, function (err, response) {
-    if (err) {
-      done(err);
+    if (!options) {
+      reject(new Error("No request options given"));
       return;
     }
 
-    if (response.statusCode != 200) {
-      console.log(path)
-      done(response.body);
+    var path = formatPath(options.path, options.path_params);
+    var method = options.method || 'get';
+    var body = options.body || {};
+    var params = options.params;
+    var query = options.query;
+
+    //Parems used to refer to query parameters, because of the mailchimp documentation.
+    if (params) {
+      console.warn('params is depricated, use query instead');
+      if (!query) {
+        query = params;
+      }
+    }
+
+    if (!path || !_.isString(path)) {
+      reject(new Error('No path given'))
       return;
     }
 
+    request({
+      method : method,
+      url : mailchimp.__base_url + path,
+      auth : {
+        user : 'any',
+        password : mailchimp.__api_key
+      },
+      json : body,
+      qs : query
+    }, function (err, response) {
 
-    done(null, response.body)
+      if (err) {
+        reject(err)
+        return;
+      }
+
+      if (response.statusCode != 200) {
+        reject(response.body);
+        return;
+      }
+
+      resolve(response.body)
+    })
+
   })
+
+  //If a callback is used, resolve it and don't return the promise
+  if (done) {
+    promise
+      .then(function (result) {
+        done(null, result)
+      })
+      .catch(function (err) {
+        done(err);
+      })
+    return;
+  }
+
+  return promise
 }
 
 
