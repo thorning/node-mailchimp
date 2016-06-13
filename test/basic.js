@@ -42,4 +42,37 @@ describe('basic mailchimp api methods', function () {
       done()
     })
   })
+
+  it('should handle simple get with promise', function (done) {
+    mailchimp.get({
+      path : '/lists',
+    }).then(function (result) {
+      assert.ok(result)
+      assert.ok(result.lists)
+      done()
+    }).catch(function (err) {
+      throw err;
+    })
+  })
+
+
+  it.skip('should handle batch operations', function (done) {
+    this.timeout(100000)
+    mailchimp.batch([
+      {
+        method : 'get',
+        path : '/lists',
+      },
+      {
+        method : 'get',
+        path : '/lists',
+      },
+    ], function (err, result) {
+      assert.equal(err, null);
+      assert.equal(result.length, 2)
+      done()
+    }, {
+      verbose : false
+    })
+  })
 })
