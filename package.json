@@ -1,6 +1,6 @@
 {
   "name": "mailchimp-api-v3",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Mailchimp wrapper for v3 of the mailchimp api, with transparant handling of batch operations",
   "main": "index.js",
   "scripts": {
