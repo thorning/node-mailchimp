@@ -106,169 +106,196 @@ Mailchimp.prototype.delete = function (options, done) {
 }
 
 
-Mailchimp.prototype.getAndUnpackBatchResults = function (response_body_url, done, opts) {
-  var read = request.get(response_body_url);
+Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opts) {
 
-  var parse = tar.Parse();
+  return new Promise(function (resolve, reject) {
+    var read = request.get(response_body_url);//DELETE?
 
-  parse.on('entry', function(entry){
+    var parse = tar.Parse();
 
-    if (!entry.path.match(/\.json/)){
-      return
-    }
-
-    var result_json = '';
-    entry.on('data', function (data) {
-      result_json += data.toString();
-    })
-
-    entry.on('error', function (err) {
-      parse.close();
-      entry.close();
-      done(err);
-    })
-
-    entry.on('end', function () {
-      var results = JSON.parse(result_json)
-
-      results.sort(function (result_a, result_b) {
-        return result_a.operation_id - result_b.operation_id
-      })
-
-      for (var i = 0; i < results.length; i++) {
-        results[i] = JSON.parse(results[i].response);
-      };
-
-      if (results.length == 1 && opts.unarray) {
-        results = results[0];
+    parse.on('entry', function(entry){
+      if (!entry.path.match(/\.json/)){
+        return
       }
 
-      done(null, results)
+      var result_json = '';
+      entry.on('data', function (data) {
+        result_json += data.toString();
+      })
+
+      entry.on('error', function (err) {
+        parse.close();
+        entry.close();
+        reject(err);
+      })
+
+      entry.on('end', function () {
+        var results = JSON.parse(result_json)
+
+        results.sort(function (result_a, result_b) {
+          return result_a.operation_id - result_b.operation_id
+        })
+
+        for (var i = 0; i < results.length; i++) {
+          results[i] = JSON.parse(results[i].response);
+        };
+
+        resolve(results)
+      })
+    });
+
+    parse.on('error', function (err) {
+      parse.close();
+      reject(err);
+    })
+
+    parse.on('end', function (res) {
+
     })
 
 
-
-  });
-
-  parse.on('error', function (err) {
-    parse.close();
-    done(err);
-  })
-
-  parse.on('end', function (res) {
-    console.log('end', res);
-  })
-
-
-  request.get({
-    url : response_body_url,
-    encoding : null
-  }, function (err, response) {
-    if (err) {
-      done(err);
-      return;
-    }
-    
-
-    if (response.statusCode != 200) {
-      done(new String(response.body));
-      return;
-    }
-
-    var response_buffer = response.body;
-
-    zlib.gunzip(response_buffer, function (err, result) {
+    request.get({
+      url : response_body_url,
+      encoding : null
+    }, function (err, response) {
       if (err) {
-        done(err);
+        reject(err);
+        return;
+      }
+      
+
+      if (response.statusCode != 200) {
+        reject(new String(response.body));
         return;
       }
 
-      parse.end(result)
+      var response_buffer = response.body;
+
+      zlib.gunzip(response_buffer, function (err, result) {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        parse.end(result)
+
+      })
 
     })
 
   })
+
+
+  
 }
 
 Mailchimp.prototype.batchWait = function (batch_id, done, opts) {
-  opts = opts || {};
+  var mailchimp = this; 
 
+  //If done is not a function, and no opts are given, second argument is the opts
+  if (!opts && !_.isFunction(done)) {
+    opts = done;
+    done = null;
+  }
+
+  opts = _.clone(opts) || {};
+
+
+  if (!opts.interval) {
+    opts.interval = 2000
+  }
+  
   //default unpack to true
   if (opts.unpack !== false) {
     opts.unpack = true;
   }
 
-  var _this = this;
-
-  var interval = opts.interval || '2000'
+  //default verbose to true
+  if (opts.verbose !== false) {
+    opts.verbose = true;
+  }
 
   var options = {
     method : 'get',
     path : '/batches/' + batch_id
   }
 
+  var promise = new Promise(function (resolve, reject) {
+    var request = function () {
+      mailchimp.request(options)
+        .then(function (result) {
+          if (opts.verbose) {
+            console.log('batch status:', result.status, result.finished_operations + '/' + result.total_operations)
+          }
+          if (result.status == 'finished') {
+            resolve(result);
+            return;
+          }
+
+          setTimeout(request, opts.interval);
+
+      }, reject)
+    }
+
+    request();
+  })
 
   if (opts.unpack) {
-    var _done = done;
-    var _this = this;
-    done = function (err, result) {
-      if (err) {
-        _done(err);
-        return;
-      }
-
-      _this.getAndUnpackBatchResults(result.response_body_url, _done, opts)
-    }
-  }
-
-  var request = function () {
-    _this.request(options, function (err, result) {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      if (opts.verbose !== false) {
-        console.log('batch status:', result.status, result.finished_operations + '/' + result.total_operations)
-      }
-      if (result.status == 'finished') {
-        done(null, result);
-        return
-      }
-
-      setTimeout(request, interval)
-
+    promise = promise.then(function (result) {
+      return mailchimp._getAndUnpackBatchResults(result.response_body_url, opts)
     })
   }
 
-  
-  request();
+  //If a callback is used, resolve it and don't return the promise
+  if (done) {
+    promise
+      .then(function (result) {
+        done(null, result)
+      })
+      .catch(function (err) {
+        done(err);
+      })
+    return;
+  }
+
+  return promise
 }
 
 Mailchimp.prototype.batch = function (operations, done, opts) {
-  opts = opts || {};
+  var mailchimp = this;
+
+  //If done is not a function, and no opts are given, second argument is the opts
+  if (!opts && !_.isFunction(done)) {
+    opts = done;
+    done = null;
+  }
+
+  opts = _.clone(opts) || {};
+
+
+  //TODO: Validate arguments and reject errors
+
+  //If the batch call does not get an operation, but a single normal call, return the result instead of a length 1 array
+  //This is useful for large get requests, like all subscribers of a list without paging
+  var should_unarray = false;
+  if (!_.isArray(operations)) {
+    operations = [operations]
+    should_unarray = true;
+  }
 
   //default wait to true
   if (opts.wait !== false) {
     opts.wait = true;
   }
 
-  if (!_.isArray(operations)) {
-    operations = [operations]
-    opts.unarray = true;
+  //default unpack to true
+  if (opts.unpack !== false) {
+    opts.unpack = true;
   }
 
-  if (opts.wait) {
-    var _done = done;
-    var _this = this;
-    done = function (err, result) {
-      if (err) {
-        _done(err);
-        return;
-      }
-
-      _this.batchWait(result.id, _done, opts)
-    }
+  //default verbose to true
+  if (opts.verbose !== false) {
+    opts.verbose = true;
   }
 
 
@@ -286,21 +313,60 @@ Mailchimp.prototype.batch = function (operations, done, opts) {
     id++;
   })
 
-  this.request({
+
+  var promise = mailchimp.request({
     method : 'post',
     path : '/batches',
     body : {
       operations : _operations  
     }
-  }, done)
+  })
+
+
+  if (opts.verbose) {
+    promise = promise.then(function (result) {
+      console.log('Batch started with id:', result.id);
+      return result
+    })
+  }
+
+  if (opts.wait) {
+    promise = promise.then(function (result) {
+      return mailchimp.batchWait(result.id, opts)
+    })
+  }
+
+  if (opts.wait && opts.unpack && should_unarray) {
+    promise = promise.then(function (result) {
+      if (result.length == 1) {
+        result = result[0];
+      }
+      return result
+    })
+  }
+
+
+  //If a callback is used, resolve it and don't return the promise
+  if (done) {
+    promise
+      .then(function (result) {
+        done(null, result)
+      })
+      .catch(function (err) {
+        done(err);
+      })
+    return;
+  }
+
+  return promise
+
+  
 
 }
 
 Mailchimp.prototype.request = function (options, done) {
   var mailchimp = this;
-
   var promise = new Promise(function(resolve, reject) {
-
     if (!options) {
       reject(new Error("No request options given"));
       return;

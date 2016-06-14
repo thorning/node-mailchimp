@@ -81,6 +81,119 @@ describe('batch mailchimp api methods', function () {
 
   var mailchimp = new Mailchimp(api_key);
 
+  it('should handle batch with single non-array command', function (done) {
+    this.timeout(100000)
+    mailchimp.batch({
+        method : 'get',
+        path : '/lists',
+      }, {
+      verbose : false
+    }).then(function (result) {
+      assert.ok(result)
+      assert.ok(result.lists)
+      done()
+    }).catch(function (err) {
+      throw err;
+    })
+  })
+
+  it('should handle batch operations with no wait', function (done) {
+    this.timeout(100000)
+    mailchimp.batch([
+      {
+        method : 'get',
+        path : '/lists',
+      },
+      {
+        method : 'get',
+        path : '/lists',
+      },
+    ], function (err, result) {
+      assert.equal(err, null);
+      assert.ok(result.submitted_at);
+      assert.ok(result.status);
+      assert.ok(result.id);
+      done()
+    }, {
+      verbose : false,
+      wait : false
+    })
+  })
+
+  it('should handle batch operations with no wait with promises', function (done) {
+    this.timeout(100000)
+    mailchimp.batch([
+      {
+        method : 'get',
+        path : '/lists',
+      },
+      {
+        method : 'get',
+        path : '/lists',
+      },
+    ], {
+      verbose : false,
+      wait : false
+    }).then(function (result) {
+      assert.ok(result.submitted_at);
+      assert.ok(result.status);
+      assert.ok(result.id);
+      done()
+    }).catch(function (err) {
+      throw err;
+    })
+  })
+
+  it('should handle batch operations with no unpack', function (done) {
+    this.timeout(100000)
+    mailchimp.batch([
+      {
+        method : 'get',
+        path : '/lists',
+      },
+      {
+        method : 'get',
+        path : '/lists',
+      },
+    ], function (err, result) {
+      assert.equal(err, null);
+      assert.ok(result.submitted_at);
+      assert.equal(result.status, 'finished');
+      assert.equal(result.total_operations, 2);
+      done()
+    }, {
+      verbose : false,
+      wait : true,
+      unpack : false,
+    })
+  })
+
+  it('should handle batch operations with no unpack with promise', function (done) {
+    this.timeout(100000)
+    mailchimp.batch([
+      {
+        method : 'get',
+        path : '/lists',
+      },
+      {
+        method : 'get',
+        path : '/lists',
+      },
+    ], {
+      verbose : false,
+      wait : true,
+      unpack : false,
+    }).then(function (result) {
+      assert.ok(result.submitted_at);
+      assert.equal(result.status, 'finished');
+      assert.equal(result.total_operations, 2);
+      done()
+    }).catch(function (err) {
+      throw err;
+    })
+  })
+
+
   it('should handle batch operations', function (done) {
     this.timeout(100000)
     mailchimp.batch([
@@ -112,11 +225,69 @@ describe('batch mailchimp api methods', function () {
         method : 'get',
         path : '/lists',
       },
-    ]).then(function (result) {
+    ], {
+      verbose : false
+    }).then(function (result) {
       assert.equal(result.length, 2)
       done()
     }).catch(function (err) {
       throw err;
     })
   })
+
+  it('should handle batchWait operations', function (done) {
+    this.timeout(100000)
+    var batch_id;
+
+    mailchimp.batch([
+      {
+        method : 'get',
+        path : '/lists',
+      },
+      {
+        method : 'get',
+        path : '/lists',
+      },
+    ], {
+      verbose : false,
+      wait : false,
+    }).then(function (result) {
+      batch_id = result.id;
+      mailchimp.batchWait(batch_id, function (err, result) {
+        assert.equal(err, null);
+        assert.equal(result.length, 2)
+        done();
+      }, {verbose : false});
+    })
+  })
+
+
+  it('should handle batchWait operations with promise', function (done) {
+    this.timeout(100000)
+    var batch_id;
+
+    mailchimp.batch([
+      {
+        method : 'get',
+        path : '/lists',
+      },
+      {
+        method : 'get',
+        path : '/lists',
+      },
+    ], {
+      verbose : false,
+      wait : false,
+    }).then(function (result) {
+      batch_id = result.id;
+      return mailchimp.batchWait(batch_id, {verbose : false});
+    }).then(function (result) {
+      assert.equal(result.length, 2)
+      done();
+    }).catch(function (err) {
+      throw err;
+    })
+  })
+
+  
 })

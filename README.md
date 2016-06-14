@@ -1,6 +1,6 @@
 # node-mailchimp
 
-Mailchimp api wrapper for v3 of the mailchimp api, with batch handling
+Mailchimp api wrapper for v3 of the mailchimp api, with batch handling. Supports both promise and callback handling.
 
 ```javascript
 var Mailchimp = require('mailchimp-api-v3')
@@ -10,6 +10,16 @@ var mailchimp = new Mailchimp(api_key);
 mailchimp.get({
   path : '/lists/id1'
 }, function (err, result) {
+  ...
+})
+
+mailchimp.get({
+  path : '/lists/id1'
+})
+.then(function (result) {
+  ...
+})
+.catch(function (err) {
   ...
 })
 ```
@@ -28,6 +38,22 @@ mailchimp.batch([
 }], function (err, results) {
   //results[0] same as result in previous example
 })
+
+mailchimp.batch([
+{
+  method : 'get',
+  path : '/lists/id1'
+},
+{
+  method : 'get',
+  path : '/lists/id2'
+}])
+.then(function (results) {
+  //results[0] same as result in previous example
+})
+.catch(function (err) {
+  ...
+})
 ```
 
 ## Why
@@ -42,6 +68,10 @@ This library also supports easy usage of the mailchimp batch operations, enablin
 ## Usage
 
 For information on the possible calls, refer to the mailchimp api v3 documentation: [http://developer.mailchimp.com/documentation/mailchimp/reference/overview/](http://developer.mailchimp.com/documentation/mailchimp/reference/overview/)
+
+### Promise support
+
+In all calls you can omit the callback, and a promise will be returned instead.
 
 ### Initialization
 
@@ -83,7 +113,6 @@ mailchimp.delete({}, cb)
 ### Batch Calls
 
 ```javascript
-
 var calls = [
 {
   method : 'post',
@@ -115,3 +144,33 @@ mailchimp.batch(calls, callback, {
 * `wait` whether or not to wait for the batch command to finish, defaults to `true`
 * `interval` if `wait` is true, the interval to poll for the status of the batch call, defaults to 2000ms
 * `unpack` if `wait` is true, whether or not to get and unpack the results of the batch operation, and return the response bodies.
+* `verbose` if `wait` is true, whether or not to log progress to the console
+
+#### BatchWait
+
+```javascript
+mailchimp.batchWait(batch_id, callback, {
+  interval : 2000,
+  unpack : true,
+})
+```
+
+If you call `batch` with `wait : false`, you can use the returned batch id to resume pooling and unpacking the results at a later time.
+This also allows you to "reconnect" to a batch operation after a crash or similar.
+
+#### Single operation batch
+
+If you pass a single operation, instaed of an array to `batch`, the result will be the same as if you ran the operation without batch.
+This is very useful if you want to make calls without paging, where a normal call would take to long, and likely time out.
+
+```javascript
+mailchimp.batch({
+  method : 'get',
+  path : '/lists/id/members',
+  params : {
+    count  : 10000000000,
+  }
+}, function (err, result) {
+  //result is the same as a normal .get request
+})
+```
