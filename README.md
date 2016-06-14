@@ -7,12 +7,14 @@ var Mailchimp = require('mailchimp-api-v3')
 
 var mailchimp = new Mailchimp(api_key);
 
+//Callback style
 mailchimp.get({
   path : '/lists/id1'
 }, function (err, result) {
   ...
 })
 
+//Promise style
 mailchimp.get({
   path : '/lists/id1'
 })
@@ -26,6 +28,7 @@ mailchimp.get({
 
 seamless batch calls, with polling and unpacking of results
 
+//Callback style
 ```javascript
 mailchimp.batch([
 {
@@ -39,6 +42,7 @@ mailchimp.batch([
   //results[0] same as result in previous example
 })
 
+//Promise style
 mailchimp.batch([
 {
   method : 'get',
@@ -93,7 +97,7 @@ mailchimp.request({
   body : {
     //body parameters, see mailchimp documentation for each call
   },
-  params : {
+  query : {
     //query string parameters, see mailchimp documentation for each call
   }
 }, callback)
@@ -167,7 +171,7 @@ This is very useful if you want to make calls without paging, where a normal cal
 mailchimp.batch({
   method : 'get',
   path : '/lists/id/members',
-  params : {
+  query : {
     count  : 10000000000,
   }
 }, function (err, result) {
