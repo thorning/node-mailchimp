@@ -455,7 +455,10 @@ Mailchimp.prototype.request = function (options, done) {
         password : mailchimp.__api_key
       },
       json : body,
-      qs : query
+      qs : query,
+      headers : {
+        'User-Agent' : 'mailchimp-api-v3 : https://github.com/thorning/node-mailchimp'
+      }
     }, function (err, response) {
 
       if (err) {
