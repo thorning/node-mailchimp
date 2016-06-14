@@ -106,12 +106,25 @@ mailchimp.request({
 `path` can be given either exactly as in the mailchimp documentation (`"/campaigns/{campaign_id}"`) and `path_params` specifying id values, or as a string with path parameters already substituted, and no `path_params`
 
 For each request method, convenience calls exists to default to that method:
+
 ```javascript
-mailchimp.get({}, cb)
-mailchimp.post({}, cb)
-mailchimp.put({}, cb)
-mailchimp.patch({}, cb)
-mailchimp.delete({}, cb)
+mailchimp.get(path, [query], [callback])
+mailchimp.post(path, [body], [callback])
+mailchimp.put(path, [body], [callback])
+mailchimp.patch(path, [body], [callback])
+mailchimp.delete(path, callback)
+```
+
+This allows shorthand forms like:
+
+```javascript
+mailchimp.post('/lists/id', {
+  email : '...'
+  ...
+})
+.then(function(results) {
+  ...
+})
 ```
 
 ### Batch Calls

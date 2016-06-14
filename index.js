@@ -45,51 +45,107 @@ var formatPath = function (path, path_params) {
 
 }
 
-Mailchimp.prototype.get = function (options, done) {
-  options = options || {};
-  options = _.clone(options)
+Mailchimp.prototype.get = function (options, query, done) {
+  options = _.clone(options) || {};
+
   if (_.isString(options)) {
     options = {
       path : options,
     }
   }
   options.method = 'get';
+
+  if (!done && _.isFunction(query)) {
+    done = query;
+    query = null;
+  }
+
+  if (query && options.query) {
+    console.warn('query set on request options overwritten by argument query');
+  }
+
+  if (query) {
+    options.query = query;
+  }
+
   return this.request(options, done);
 }
 
-Mailchimp.prototype.post = function (options, done) {
-  options = options || {};
-  options = _.clone(options)
+Mailchimp.prototype.post = function (options, body, done) {
+  options = _.clone(options) || {};
+
   if (_.isString(options)) {
     options = {
       path : options,
     }
   }
   options.method = 'post';
+
+  if (!done && _.isFunction(body)) {
+    done = body;
+    body = null;
+  }
+
+  if (body && options.body) {
+    console.warn('body set on request options overwritten by argument body');
+  }
+
+  if (body) {
+    options.body = body;
+  }
+
   return this.request(options, done);
 }
 
-Mailchimp.prototype.patch = function (options, done) {
-  options = options || {};
-  options = _.clone(options)
+Mailchimp.prototype.patch = function (options, body, done) {
+  options = _.clone(options) || {};
+
   if (_.isString(options)) {
     options = {
       path : options,
     }
   }
   options.method = 'patch';
+
+  if (!done && _.isFunction(body)) {
+    done = body;
+    body = null;
+  }
+
+  if (body && options.body) {
+    console.warn('body set on request options overwritten by argument body');
+  }
+
+  if (body) {
+    options.body = body;
+  }
+
   return this.request(options, done);
 }
 
-Mailchimp.prototype.put = function (options, done) {
-  options = options || {};
-  options = _.clone(options)
+Mailchimp.prototype.put = function (options, body, done) {
+  options = _.clone(options) || {};
+
   if (_.isString(options)) {
     options = {
       path : options,
     }
   }
   options.method = 'put';
+
+  if (!done && _.isFunction(body)) {
+    done = body;
+    body = null;
+  }
+
+  if (body && options.body) {
+    console.warn('body set on request options overwritten by argument body');
+  }
+
+  if (body) {
+    options.body = body;
+  }
+
   return this.request(options, done);
 }
 

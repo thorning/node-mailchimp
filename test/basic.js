@@ -43,6 +43,18 @@ describe('basic mailchimp api methods', function () {
     })
   })
 
+  it('should handle simple get with promise', function (done) {
+    mailchimp.get({
+      path : '/lists',
+    }).then(function (result) {
+      assert.ok(result)
+      assert.ok(result.lists)
+      done()
+    }).catch(function (err) {
+      done(new Error(err));
+    })
+  })
+
   it('should handle wrong path', function (done) {
     mailchimp.get({
       path : '/wrong',
@@ -52,27 +64,60 @@ describe('basic mailchimp api methods', function () {
     })
   })
 
-  it('should handle simple get with promise', function (done) {
-    mailchimp.get({
-      path : '/lists',
-    }).then(function (result) {
-      assert.ok(result)
-      assert.ok(result.lists)
-      done()
-    }).catch(function (err) {
-      throw err;
-    })
-  })
-
   it('should handle wrong path with promise', function (done) {
     mailchimp.get({
       path : '/wrong',
     }).then(function (result) {
-      throw err;
+      //Error
+      done(result)
     }).catch(function (err) {
       assert.equal(err.status, 404);
       done()
     })
+  })
+
+  it('should handle get with just a path', function (done) {
+    mailchimp.get('/lists', function (err, result) {
+      assert.equal(err, null);
+
+      assert.ok(result)
+      assert.ok(result.lists)
+      done()
+    })
+  })
+
+  it('should handle get with just a path with promise', function (done) {
+    mailchimp.get('/lists')
+      .then(function (result) {
+        assert.ok(result);
+        assert.ok(result.lists);
+        done();
+      })
+      .catch(function (err) {
+        done(new Error(err))
+      })
+  })
+
+  it('should handle get with a path and query', function (done) {
+    mailchimp.get('/lists', {offset : 1}, function (err, result) {
+      assert.equal(err, null);
+
+      assert.ok(result)
+      assert.ok(result.lists)
+      done()
+    })
+  })
+
+  it('should handle get with a path and query with promise', function (done) {
+    mailchimp.get('/lists', {offset : 1})
+      .then(function (result) {
+        assert.ok(result)
+        assert.ok(result.lists)
+        done()
+      })
+      .catch(function (err) {
+        done(new Error(err))
+      })
   })
 
 })
@@ -93,7 +138,7 @@ describe('batch mailchimp api methods', function () {
       assert.ok(result.lists)
       done()
     }).catch(function (err) {
-      throw err;
+      done(new Error(err));
     })
   })
 
@@ -140,7 +185,7 @@ describe('batch mailchimp api methods', function () {
       assert.ok(result.id);
       done()
     }).catch(function (err) {
-      throw err;
+      done(new Error(err));
     })
   })
 
@@ -189,7 +234,7 @@ describe('batch mailchimp api methods', function () {
       assert.equal(result.total_operations, 2);
       done()
     }).catch(function (err) {
-      throw err;
+      done(new Error(err));
     })
   })
 
@@ -231,7 +276,7 @@ describe('batch mailchimp api methods', function () {
       assert.equal(result.length, 2)
       done()
     }).catch(function (err) {
-      throw err;
+      done(new Error(err));
     })
   })
 
@@ -285,7 +330,7 @@ describe('batch mailchimp api methods', function () {
       assert.equal(result.length, 2)
       done();
     }).catch(function (err) {
-      throw err;
+      done(new Error(err));
     })
   })
 
