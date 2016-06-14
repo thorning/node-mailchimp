@@ -28,8 +28,8 @@ mailchimp.get({
 
 seamless batch calls, with polling and unpacking of results
 
-//Callback style
 ```javascript
+//Callback style
 mailchimp.batch([
 {
   method : 'get',
@@ -105,19 +105,24 @@ mailchimp.request({
 
 `path` can be given either exactly as in the mailchimp documentation (`"/campaigns/{campaign_id}"`) and `path_params` specifying id values, or as a string with path parameters already substituted, and no `path_params`
 
-For each request method, convenience calls exists to default to that method:
+For each request method, convenience calls exists to make common calls:
 
 ```javascript
 mailchimp.get(path, [query], [callback])
 mailchimp.post(path, [body], [callback])
 mailchimp.put(path, [body], [callback])
 mailchimp.patch(path, [body], [callback])
-mailchimp.delete(path, callback)
+mailchimp.delete(path, [callback])
 ```
 
 This allows shorthand forms like:
 
 ```javascript
+mailchimp.get('/lists')
+.then(function(results) {
+  ...
+})
+
 mailchimp.post('/lists/id', {
   email : '...'
   ...
