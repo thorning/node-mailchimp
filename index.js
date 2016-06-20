@@ -182,7 +182,7 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
       entry.on('error', function (err) {
         parse.close();
         entry.close();
-        reject(err);
+        reject(new Error(err));
       })
 
       entry.on('end', function () {
@@ -202,7 +202,7 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
 
     parse.on('error', function (err) {
       parse.close();
-      reject(err);
+      reject(new Error(err));
     })
 
     parse.on('end', function (res) {
@@ -215,13 +215,13 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
       encoding : null
     }, function (err, response) {
       if (err) {
-        reject(err);
+        reject(new Error(err));
         return;
       }
       
 
       if (response.statusCode != 200) {
-        reject(new String(response.body));
+        reject(Object.assign(new Error(), response.body));
         return;
       }
 
@@ -229,7 +229,7 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
 
       zlib.gunzip(response_buffer, function (err, result) {
         if (err) {
-          reject(err);
+          reject(new Error(err));
           return;
         }
 
@@ -462,12 +462,12 @@ Mailchimp.prototype.request = function (options, done) {
     }, function (err, response) {
 
       if (err) {
-        reject(err)
+        reject(new Error(err))
         return;
       }
 
       if (response.statusCode != 200) {
-        reject(response.body);
+        reject(Object.assign(new Error(response.body.detail), response.body));
         return;
       }
 
