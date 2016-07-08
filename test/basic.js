@@ -36,7 +36,6 @@ describe('basic mailchimp api methods', function () {
       path : '/lists',
     }, function (err, result) {
       assert.equal(err, null);
-
       assert.ok(result)
       assert.ok(result.lists)
       done()
@@ -127,7 +126,7 @@ describe('batch mailchimp api methods', function () {
   var mailchimp = new Mailchimp(api_key);
 
   it('should handle batch with single non-array command', function (done) {
-    this.timeout(100000)
+    this.timeout(30000)
     mailchimp.batch({
         method : 'get',
         path : '/lists',
@@ -143,7 +142,7 @@ describe('batch mailchimp api methods', function () {
   })
 
   it('should handle batch operations with no wait', function (done) {
-    this.timeout(100000)
+    this.timeout(30000)
     mailchimp.batch([
       {
         method : 'get',
@@ -166,7 +165,7 @@ describe('batch mailchimp api methods', function () {
   })
 
   it('should handle batch operations with no wait with promises', function (done) {
-    this.timeout(100000)
+    this.timeout(30000)
     mailchimp.batch([
       {
         method : 'get',
@@ -190,7 +189,7 @@ describe('batch mailchimp api methods', function () {
   })
 
   it('should handle batch operations with no unpack', function (done) {
-    this.timeout(100000)
+    this.timeout(30000)
     mailchimp.batch([
       {
         method : 'get',
@@ -214,7 +213,7 @@ describe('batch mailchimp api methods', function () {
   })
 
   it('should handle batch operations with no unpack with promise', function (done) {
-    this.timeout(100000)
+    this.timeout(30000)
     mailchimp.batch([
       {
         method : 'get',
@@ -240,7 +239,7 @@ describe('batch mailchimp api methods', function () {
 
 
   it('should handle batch operations', function (done) {
-    this.timeout(100000)
+    this.timeout(30000)
     mailchimp.batch([
       {
         method : 'get',
@@ -260,7 +259,7 @@ describe('batch mailchimp api methods', function () {
   })
 
   it('should handle batch operations with promise', function (done) {
-    this.timeout(100000)
+    this.timeout(30000)
     mailchimp.batch([
       {
         method : 'get',
@@ -281,7 +280,7 @@ describe('batch mailchimp api methods', function () {
   })
 
   it('should handle batchWait operations', function (done) {
-    this.timeout(100000)
+    this.timeout(30000)
     var batch_id;
 
     mailchimp.batch([
@@ -308,7 +307,7 @@ describe('batch mailchimp api methods', function () {
 
 
   it('should handle batchWait operations with promise', function (done) {
-    this.timeout(100000)
+    this.timeout(30000)
     var batch_id;
 
     mailchimp.batch([
