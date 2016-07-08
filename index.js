@@ -466,12 +466,15 @@ Mailchimp.prototype.request = function (options, done) {
         return;
       }
 
-      if (response.statusCode != 200) {
+      if (response.statusCode < 200 || response.statusCode > 299) {
         reject(Object.assign(new Error(response.body.detail), response.body));
         return;
       }
 
-      resolve(response.body)
+      var result = response.body || {};
+      result.statusCode = response.statusCode;
+
+      resolve(result)
     })
 
   })
