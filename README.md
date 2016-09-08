@@ -93,7 +93,7 @@ mailchimp.request({
   path : 'path for the call, see mailchimp documentation for possible calls'
   path_params : {
     //path parameters, see mailchimp documentation for each call
-  }
+  },
   body : {
     //body parameters, see mailchimp documentation for each call
   },
@@ -122,12 +122,18 @@ mailchimp.get('/lists')
 .then(function(results) {
   ...
 })
+.catch(function (err) {
+  ...
+})
 
 mailchimp.post('/lists/id', {
-  email : '...'
+  email_address : '...'
   ...
 })
 .then(function(results) {
+  ...
+})
+.catch(function (err) {
   ...
 })
 ```
