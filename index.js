@@ -311,7 +311,7 @@ Mailchimp.prototype.batchWait = function (batch_id, done, opts) {
       .catch(function (err) {
         done(err);
       })
-    return;
+    return null;
   }
 
   return promise
@@ -411,7 +411,7 @@ Mailchimp.prototype.batch = function (operations, done, opts) {
       .catch(function (err) {
         done(err);
       })
-    return;
+    return null;
   }
 
   return promise
@@ -488,7 +488,7 @@ Mailchimp.prototype.request = function (options, done) {
       .catch(function (err) {
         done(err);
       })
-    return;
+    return null;
   }
 
   return promise
