@@ -172,9 +172,11 @@ Mailchimp.prototype.delete = function (options, done) {
 Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opts) {
 
   return new Promise(function (resolve, reject) {
-    var read = request.get(response_body_url);//DELETE?
+    var read = request.get(response_body_url);
 
     var parse = tar.Parse();
+
+    var results = [];
 
     parse.on('entry', function(entry){
       if (!entry.path.match(/\.json/)){
@@ -182,6 +184,7 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
       }
 
       var result_json = '';
+
       entry.on('data', function (data) {
         result_json += data.toString();
       })
@@ -193,17 +196,11 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
       })
 
       entry.on('end', function () {
-        var results = JSON.parse(result_json)
+        results.push(JSON.parse(result_json));
 
-        results.sort(function (result_a, result_b) {
-          return result_a.operation_id - result_b.operation_id
-        })
+        
 
-        for (var i = 0; i < results.length; i++) {
-          results[i] = JSON.parse(results[i].response);
-        };
-
-        resolve(results)
+        
       })
     });
 
@@ -213,7 +210,17 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
     })
 
     parse.on('end', function (res) {
+      results = _.flatten(results);
+      
+      results.sort(function (result_a, result_b) {
+        return result_a.operation_id - result_b.operation_id
+      })
 
+      for (var i = 0; i < results.length; i++) {
+        results[i] = JSON.parse(results[i].response);
+      };
+
+      resolve(results)
     })
 
 
@@ -372,10 +379,14 @@ Mailchimp.prototype.batch = function (operations, done, opts) {
     }
     _operation.path = formatPath(_operation.path, _operation.path_params);
 
+
+    if (_operation.method) {
+      _operation.method = _operation.method.toUpperCase();
+    }
+
     _operations.push(_operation);
     id++;
   })
-
 
   var promise = mailchimp.request({
     method : 'post',
