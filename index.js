@@ -7,6 +7,13 @@ var request = require('request'),
     _       = require('lodash');
 
 
+Promise.config({
+    // Enables all warnings except forgotten return statements.
+    warnings: {
+        wForgottenReturn: false
+    }
+});
+
 function Mailchimp (api_key) {
   var api_key_regex = /.+\-.+/
 
