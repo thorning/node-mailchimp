@@ -212,6 +212,7 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
     parse.on('end', function (res) {
       results = _.flatten(results);
       
+      //TODO: implement linear sort uding operation id is linear from 0 to length-1
       results.sort(function (result_a, result_b) {
         return result_a.operation_id - result_b.operation_id
       })
@@ -384,6 +385,11 @@ Mailchimp.prototype.batch = function (operations, done, opts) {
       _operation.method = _operation.method.toUpperCase();
     }
 
+    if (_operation.query) {
+      _operation.params = _.assign({},_operation.query, _operation.params);
+      delete _operation.query
+    }
+
     _operations.push(_operation);
     id++;
   })
@@ -454,7 +460,6 @@ Mailchimp.prototype.request = function (options, done) {
 
     //Parems used to refer to query parameters, because of the mailchimp documentation.
     if (params) {
-      console.warn('params is depricated, use query instead');
       if (!query) {
         query = params;
       }

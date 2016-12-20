@@ -141,6 +141,25 @@ describe('batch mailchimp api methods', function () {
     })
   })
 
+  it('should handle batch with single non-array command and query param', function (done) {
+    this.timeout(30000)
+    mailchimp.batch({
+        method : 'get',
+        path : '/lists',
+        query : {
+          count : 1
+        },
+      }, {
+      verbose : false
+    }).then(function (result) {
+      assert.ok(result)
+      assert.ok(result.lists)
+      done()
+    }).catch(function (err) {
+      done(new Error(err));
+    })
+  })
+
   it('should handle batch operations with no wait', function (done) {
     this.timeout(30000)
     mailchimp.batch([
@@ -268,6 +287,33 @@ describe('batch mailchimp api methods', function () {
       {
         method : 'get',
         path : '/lists',
+      },
+    ], {
+      verbose : false
+    }).then(function (result) {
+      assert.equal(result.length, 2)
+      done()
+    }).catch(function (err) {
+      done(new Error(err));
+    })
+  })
+
+  it('should handle batch operations with promise and query', function (done) {
+    this.timeout(30000)
+    mailchimp.batch([
+      {
+        method : 'get',
+        path : '/lists',
+        query : {
+          count : 8,
+        }
+      },
+      {
+        method : 'get',
+        path : '/lists',
+        query : {
+          count : 1,
+        }
       },
     ], {
       verbose : false
