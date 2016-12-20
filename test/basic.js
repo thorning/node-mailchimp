@@ -381,5 +381,48 @@ describe('batch mailchimp api methods', function () {
     })
   })
 
+  it('should handle empty batch operations with no wait', function (done) {
+    this.timeout(20000)
+    mailchimp.batch([], {
+      verbose : false,
+      wait : false
+    }).then(function (result) {
+      assert.ok(result.submitted_at);
+      assert.ok(result.status);
+      assert.ok(result.id);
+      done()
+    }).catch(function (err) {
+      done(new Error(err));
+    })
+  })
+
+  it('should handle empty batch operations with no unpack', function (done) {
+    this.timeout(20000)
+    mailchimp.batch([], {
+      verbose : false,
+      wait : true,
+      unpack : false,
+    }).then(function (result) {
+      assert.ok(result.submitted_at);
+      assert.equal(result.status, 'finished');
+      assert.equal(result.total_operations, 0);
+      done()
+    }).catch(function (err) {
+      done(new Error(err));
+    })
+  })
+
+  it('should handle empty batch', function (done) {
+    this.timeout(20000)
+    mailchimp.batch([], {
+      verbose : false,
+    }).then(function (result) {
+      assert.ok(result)
+      done()
+    }).catch(function (err) {
+      done(new Error(err));
+    })
+  })
+
   
 })

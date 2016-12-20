@@ -313,6 +313,12 @@ Mailchimp.prototype.batchWait = function (batch_id, done, opts) {
 
   if (opts.unpack) {
     promise = promise.then(function (result) {
+
+      //in case the batch was empty, there is nothing to unpack (should no longer be hit)
+      if (result.total_operations == 0) {
+        return [];
+      }
+
       return mailchimp._getAndUnpackBatchResults(result.response_body_url, opts)
     })
   }
@@ -367,6 +373,13 @@ Mailchimp.prototype.batch = function (operations, done, opts) {
   //default verbose to true
   if (opts.verbose !== false) {
     opts.verbose = true;
+  }
+
+
+  //handle special case of empty batch with unpack.
+  //empty batches without unpack are still sent to mailchimp to get consistent responses from mailchimp
+  if (operations.length == 0 && opts.wait && opts.unpack) {
+    return Promise.resolve([]);
   }
 
 
