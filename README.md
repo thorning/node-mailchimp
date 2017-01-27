@@ -90,7 +90,7 @@ var mailchimp = new Mailchimp(api_key);
 ```javascript
 mailchimp.request({
   method : 'get|post|put|patch|delete',
-  path : 'path for the call, see mailchimp documentation for possible calls'
+  path : 'path for the call, see mailchimp documentation for possible calls',
   path_params : {
     //path parameters, see mailchimp documentation for each call
   },
