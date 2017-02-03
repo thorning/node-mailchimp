@@ -126,8 +126,9 @@ mailchimp.get('/lists')
   ...
 })
 
-mailchimp.post('/lists/id', {
-  email_address : '...'
+mailchimp.post('/lists/id/members', {
+  email_address : '...',
+  status : 'subscribed'
   ...
 })
 .then(function(results) {
