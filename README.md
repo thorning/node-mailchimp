@@ -189,7 +189,7 @@ This also allows you to "reconnect" to a batch operation after a crash or simila
 
 #### Single operation batch
 
-If you pass a single operation, instaed of an array to `batch`, the result will be the same as if you ran the operation without batch.
+If you pass a single operation, instead of an array to `batch`, the result will be the same as if you ran the operation without batch.
 This is very useful if you want to make calls without paging, where a normal call would take to long, and likely time out.
 
 ```javascript
