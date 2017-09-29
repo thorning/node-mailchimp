@@ -503,7 +503,7 @@ Mailchimp.prototype.request = function (options, done) {
       }
 
       if (response.statusCode < 200 || response.statusCode > 299) {
-        reject(Object.assign(new Error(response.body.detail), response.body));
+        reject(Object.assign(new Error(response.body ? response.body.detail : response.statusCode), response.body || response));
         return;
       }
 
