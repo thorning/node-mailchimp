@@ -172,14 +172,14 @@ Mailchimp.prototype.delete = function (options, done) {
 Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opts) {
 
   return new Promise(function (resolve, reject) {
-    var read = request.get(response_body_url);
 
-    var parse = tar.Parse();
+    var parse = new tar.Parse();
 
     var results = [];
 
     parse.on('entry', function(entry){
       if (!entry.path.match(/\.json/)){
+        entry.resume();
         return
       }
 
