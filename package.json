@@ -4,7 +4,7 @@
   "description": "Mailchimp wrapper for v3 of the mailchimp api, with transparant handling of batch operations",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --use_strict"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,6 @@
     "bluebird": "^3.4.0",
     "lodash": "^3.10.1",
     "request": "^2.67.0",
-    "tar": "^2.2.1"
+    "tar": "^4.0.2"
   }
 }
