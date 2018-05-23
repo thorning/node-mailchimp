@@ -1,6 +1,7 @@
 // export as namespace mailchimpApiV3;
 
-export default Mailchimp;
+
+export = Mailchimp;
 
 declare class Mailchimp {
   constructor(api: string)
