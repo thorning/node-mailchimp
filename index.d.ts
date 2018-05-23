@@ -1,9 +1,9 @@
 // export as namespace mailchimpApiV3;
 
-export = Mailchimp;
+export default Mailchimp;
 
 declare class Mailchimp {
-  constructor(api:string)
+  constructor(api: string)
 
   get(
     pathOrOptions: PathOrOptions,
@@ -77,7 +77,7 @@ declare class Mailchimp {
     callback?: Callback,
   ): void;
 
-  batch:any
+  batch(...args: any[]): any
 }
 
 type Path = string;
