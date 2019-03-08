@@ -47,7 +47,7 @@ var formatPath = function (path, path_params) {
   path = _.reduce(path_params, function (_path, value, param) {
     return _path.replace('{'+param+'}', value);
   }, path)
-  
+
   return path;
 
 }
@@ -198,9 +198,9 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
       entry.on('end', function () {
         results.push(JSON.parse(result_json));
 
-        
 
-        
+
+
       })
     });
 
@@ -211,7 +211,7 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
 
     parse.on('end', function (res) {
       results = _.flatten(results);
-      
+
       //TODO: implement linear sort uding operation id is linear from 0 to length-1
       results.sort(function (result_a, result_b) {
         return result_a.operation_id - result_b.operation_id
@@ -233,7 +233,7 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
         reject(new Error(err));
         return;
       }
-      
+
 
       if (response.statusCode != 200) {
         reject(Object.assign(new Error(), response.body));
@@ -257,11 +257,11 @@ Mailchimp.prototype._getAndUnpackBatchResults = function (response_body_url, opt
   })
 
 
-  
+
 }
 
 Mailchimp.prototype.batchWait = function (batch_id, done, opts) {
-  var mailchimp = this; 
+  var mailchimp = this;
 
   //If done is not a function, and no opts are given, second argument is the opts
   if (!opts && !_.isFunction(done)) {
@@ -275,7 +275,7 @@ Mailchimp.prototype.batchWait = function (batch_id, done, opts) {
   if (!opts.interval) {
     opts.interval = 2000
   }
-  
+
   //default unpack to true
   if (opts.unpack !== false) {
     opts.unpack = true;
@@ -411,7 +411,7 @@ Mailchimp.prototype.batch = function (operations, done, opts) {
     method : 'post',
     path : '/batches',
     body : {
-      operations : _operations  
+      operations : _operations
     }
   })
 
@@ -453,7 +453,7 @@ Mailchimp.prototype.batch = function (operations, done, opts) {
 
   return promise
 
-  
+
 
 }
 
@@ -470,6 +470,14 @@ Mailchimp.prototype.request = function (options, done) {
     var body = options.body || {};
     var params = options.params;
     var query = options.query;
+
+    var headers = {
+      'User-Agent' : 'mailchimp-api-v3 : https://github.com/thorning/node-mailchimp'
+    };
+    var language = options.language || body.language || null;
+    if (language) {
+      headers['Accept-Language'] = language;
+    }
 
     //Parems used to refer to query parameters, because of the mailchimp documentation.
     if (params) {
@@ -492,9 +500,7 @@ Mailchimp.prototype.request = function (options, done) {
       },
       json : body,
       qs : query,
-      headers : {
-        'User-Agent' : 'mailchimp-api-v3 : https://github.com/thorning/node-mailchimp'
-      }
+      headers : headers,
     }, function (err, response) {
 
       if (err) {
