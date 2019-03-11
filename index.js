@@ -474,6 +474,9 @@ Mailchimp.prototype.request = function (options, done) {
     var headers = {
       'User-Agent' : 'mailchimp-api-v3 : https://github.com/thorning/node-mailchimp'
     };
+
+    // Mailchimp does not respect on the language set in requests bodies for confirmation emails on new subscribers (and maybe other)
+    // A workaround is to make sure the language header matches
     var language = options.language || body.language || null;
     if (language) {
       headers['Accept-Language'] = language;
