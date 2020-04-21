@@ -507,12 +507,18 @@ Mailchimp.prototype.request = function (options, done) {
     }, function (err, response) {
 
       if (err) {
-        reject(new Error(err))
+        var error = new Error(err);
+        error.response = response;
+        error.statusCode = response ? response.statusCode : undefined;
+        reject(error)
         return;
       }
 
       if (response.statusCode < 200 || response.statusCode > 299) {
-        reject(Object.assign(new Error(response.body ? response.body.detail : response.statusCode), response.body || response));
+        var error = Object.assign(new Error(response.body ? response.body.detail : response.statusCode), response.body || response)
+        error.response = response;
+        error.statusCode = response.statusCode;
+        reject(error);
         return;
       }
 
