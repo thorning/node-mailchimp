@@ -14,16 +14,21 @@ Promise.config({
     }
 });
 
-function Mailchimp (api_key) {
+function Mailchimp (api_key, dc = null) {
   var api_key_regex = /.+\-.+/
 
-  if (!api_key_regex.test(api_key)) {
+  if (!api_key_regex.test(api_key) && dc === null) {
     throw new Error('missing or invalid api key: ' + api_key)
   }
 
 
   this.__api_key = api_key;
-  this.__base_url = "https://"+ this.__api_key.split('-')[1] + ".api.mailchimp.com/3.0"
+  if(dc !== null){
+    this.__base_url = "https://us"+ dc + ".api.mailchimp.com/3.0"
+    console.log(this.__base_url)
+  }else{
+    this.__base_url = "https://"+ this.__api_key.split('-')[1] + ".api.mailchimp.com/3.0"
+  }
 }
 
 var formatPath = function (path, path_params) {
