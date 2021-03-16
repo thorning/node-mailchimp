@@ -24,8 +24,7 @@ function Mailchimp (api_key, dc = null) {
 
   this.__api_key = api_key;
   if(dc !== null){
-    this.__base_url = "https://us"+ dc + ".api.mailchimp.com/3.0"
-    console.log(this.__base_url)
+    this.__base_url = "https://"+ dc + ".api.mailchimp.com/3.0"
   }else{
     this.__base_url = "https://"+ this.__api_key.split('-')[1] + ".api.mailchimp.com/3.0"
   }
