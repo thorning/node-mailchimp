@@ -29,7 +29,7 @@ describe('handle initialization', function () {
   })
 
   it('should work for correctly formated oauth token with a DC', function () {
-    var mailchimp = new Mailchimp('token', '19')
+    var mailchimp = new Mailchimp('token', 'us19')
   })
 })
 
