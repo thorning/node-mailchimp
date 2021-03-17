@@ -1,5 +1,7 @@
 var api_key = process.env.MAILCHIMP_TEST_API_KEY
+var oauth_token = process.env.MAILCHIMP_TEST_OAUTH_TOKEN
 var assert = require('assert')
+var dc = process.env.DC
 
 var Mailchimp = require('../index');
 
@@ -25,11 +27,109 @@ describe('handle initialization', function () {
   it('should work for correctly formated api key', function () {
     var mailchimp = new Mailchimp('key-dc')
   })
+
+  it('should work for correctly formated oauth token with a DC', function () {
+    var mailchimp = new Mailchimp('token', 'us19')
+  })
 })
 
 describe('basic mailchimp api methods', function () {
 
   var mailchimp = new Mailchimp(api_key);
+
+  it('should handle simple get', function (done) {
+    mailchimp.get({
+      path : '/lists',
+    }, function (err, result) {
+      assert.equal(err, null);
+      assert.ok(result)
+      assert.ok(result.lists)
+      done()
+    })
+  })
+
+  it('should handle simple get with promise', function (done) {
+    mailchimp.get({
+      path : '/lists',
+    }).then(function (result) {
+      assert.ok(result)
+      assert.ok(result.lists)
+      done()
+    }).catch(function (err) {
+      done(new Error(err));
+    })
+  })
+
+  it('should handle wrong path', function (done) {
+    mailchimp.get({
+      path : '/wrong',
+    }, function (err, result) {
+      assert.equal(err.status, 404);
+      done()
+    })
+  })
+
+  it('should handle wrong path with promise', function (done) {
+    mailchimp.get({
+      path : '/wrong',
+    }).then(function (result) {
+      //Error
+      done(result)
+    }).catch(function (err) {
+      assert.equal(err.status, 404);
+      done()
+    })
+  })
+
+  it('should handle get with just a path', function (done) {
+    mailchimp.get('/lists', function (err, result) {
+      assert.equal(err, null);
+
+      assert.ok(result)
+      assert.ok(result.lists)
+      done()
+    })
+  })
+
+  it('should handle get with just a path with promise', function (done) {
+    mailchimp.get('/lists')
+      .then(function (result) {
+        assert.ok(result);
+        assert.ok(result.lists);
+        done();
+      })
+      .catch(function (err) {
+        done(new Error(err))
+      })
+  })
+
+  it('should handle get with a path and query', function (done) {
+    mailchimp.get('/lists', {offset : 1}, function (err, result) {
+      assert.equal(err, null);
+
+      assert.ok(result)
+      assert.ok(result.lists)
+      done()
+    })
+  })
+
+  it('should handle get with a path and query with promise', function (done) {
+    mailchimp.get('/lists', {offset : 1})
+      .then(function (result) {
+        assert.ok(result)
+        assert.ok(result.lists)
+        done()
+      })
+      .catch(function (err) {
+        done(new Error(err))
+      })
+  })
+
+})
+
+describe('basic mailchimp api methods with oauth token and dc', function () {
+
+  var mailchimp = new Mailchimp(oauth_token, dc);
 
   it('should handle simple get', function (done) {
     mailchimp.get({
