@@ -4,7 +4,7 @@
 export = Mailchimp;
 
 declare class Mailchimp {
-  constructor(api: string)
+  constructor(api: string, dc?: string)
 
   get(
     pathOrOptions: PathOrOptions,
