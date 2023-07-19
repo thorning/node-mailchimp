@@ -1,7 +1,32 @@
 "use strict";
 
-var request = require('request'),
-    tar   = require('tar'),
+function request(options, callback) {
+  import('node-fetch')
+      .then((module) => {
+        const fetch = module.default;
+
+        const url = options.url + '?' +  new URLSearchParams(options.qs);
+        fetch(url, {
+          method: options.method || 'GET',
+          headers: {
+            ...options.headers,
+            authorization: 'OAuth ' + options.auth.password.split('-')[0]
+          },
+          body: JSON.stringify(options.body),
+        })
+            .then((res) => {
+              return res.json();
+            })
+            .then((data) => {
+              if (data.status) {
+                callback(null, {body: data, statusCode: data.status});
+              }
+              callback(null, {body: data});
+            });
+      });
+}
+
+var tar   = require('tar'),
     zlib    = require('zlib'),
     Promise = require("bluebird"),
     _       = require('lodash');
